@@ -16,6 +16,14 @@ func newDynamoTheme() *dynamoTheme {
 }
 
 func (t *dynamoTheme) Color(name fyne.ThemeColorName, _ fyne.ThemeVariant) color.Color {
+	if name == theme.ColorNameShadow {
+		return color.Transparent
+	}
+
+	if name == theme.ColorNameSeparator {
+		return color.RGBA{54, 54, 54, 255}
+	}
+
 	return t.Theme.Color(name, theme.VariantDark)
 }
 
