@@ -9,19 +9,18 @@ import (
 
 func makeTopBar() fyne.CanvasObject {
 	var toolbarActionRef *widget.ToolbarAction
+	currApp := fyne.CurrentApp()
 
 	items := []*fyne.MenuItem{
 		fyne.NewMenuItem("Abrir diretório", func() {}),
 		fyne.NewMenuItem("Abrir relatório", func() {}),
 		fyne.NewMenuItemSeparator(),
-		fyne.NewMenuItem("Fecha", func() {}),
+		fyne.NewMenuItem("Fechar", currApp.Quit),
 	}
-
-	curApp := fyne.CurrentApp()
 
 	popUpMenu := widget.NewPopUpMenu(
 		fyne.NewMenu("MainMenu", items...),
-		curApp.Driver().AllWindows()[0].Canvas(),
+		currApp.Driver().AllWindows()[0].Canvas(),
 	)
 
 	toolbarAction := widget.NewToolbarAction(
@@ -31,7 +30,7 @@ func makeTopBar() fyne.CanvasObject {
 				return
 			}
 
-			pos := curApp.Driver().AbsolutePositionForObject(toolbarActionRef.ToolbarObject())
+			pos := currApp.Driver().AbsolutePositionForObject(toolbarActionRef.ToolbarObject())
 			newPos := fyne.NewPos(0, pos.Y+toolbarActionRef.ToolbarObject().MinSize().Height)
 
 			popUpMenu.ShowAtPosition(newPos)
