@@ -2,8 +2,6 @@ package main
 
 import (
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
 )
 
 func main() {
@@ -13,6 +11,6 @@ func main() {
 
 	win.SetPadded(false)
 	win.CenterOnScreen()
-	win.SetContent(container.NewVBox(widget.NewLabel("Hello World!"), widget.NewSeparator()))
+	win.SetContent(makeGUI())
 	win.ShowAndRun()
 }
