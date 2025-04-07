@@ -68,6 +68,10 @@ func makeRightPanel() fyne.CanvasObject {
 	return canvas.NewRectangle(color.RGBA{18, 18, 18, 255})
 }
 
+func makeBottomPanel() fyne.CanvasObject {
+	return container.NewVBox()
+}
+
 func makeGUI() fyne.CanvasObject {
 	dividers := [3]fyne.Widget{
 		widget.NewSeparator(),
@@ -79,6 +83,7 @@ func makeGUI() fyne.CanvasObject {
 		makeLeftPanel(),
 		makeTopBar(),
 		makeRightPanel(),
+		makeBottomPanel(),
 		dividers[0],
 		dividers[1],
 		dividers[2],
@@ -88,6 +93,7 @@ func makeGUI() fyne.CanvasObject {
 		objects[0],
 		objects[1],
 		objects[2],
+		objects[3],
 		dividers,
 	)
 
