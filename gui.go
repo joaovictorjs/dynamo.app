@@ -3,9 +3,28 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
+
+func makeLeftPanel() fyne.CanvasObject {
+	data := binding.BindStringList(dummyReportNames)
+
+	list := widget.NewListWithData(
+		data,
+		func() fyne.CanvasObject {
+			return widget.NewLabel("template")
+		},
+		func(di binding.DataItem, co fyne.CanvasObject) {
+			co.(*widget.Label).Bind(di.(binding.String))
+		},
+	)
+
+	list.HideSeparators = true
+
+	return container.NewPadded(list)
+}
 
 func makeTopBar() fyne.CanvasObject {
 	var toolbarActionRef *widget.ToolbarAction
@@ -50,6 +69,7 @@ func makeGUI() fyne.CanvasObject {
 	}
 
 	objects := []fyne.CanvasObject{
+		makeLeftPanel(),
 		makeTopBar(),
 		dividers[0],
 		dividers[1],
@@ -58,6 +78,7 @@ func makeGUI() fyne.CanvasObject {
 
 	layout := newDynamoLayout(
 		objects[0],
+		objects[1],
 		dividers,
 	)
 
