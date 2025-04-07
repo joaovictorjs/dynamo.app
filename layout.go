@@ -6,17 +6,18 @@ import (
 )
 
 type dynamoLayout struct {
-	left, top fyne.CanvasObject
-	dividers  [3]fyne.Widget
+	left, top, right fyne.CanvasObject
+	dividers         [3]fyne.Widget
 }
 
 func newDynamoLayout(
-	left, top fyne.CanvasObject,
+	left, top, right fyne.CanvasObject,
 	dividers [3]fyne.Widget,
 ) *dynamoLayout {
 	return &dynamoLayout{
 		left:     left,
 		top:      top,
+		right:    right,
 		dividers: dividers,
 	}
 }
@@ -25,6 +26,8 @@ func (l *dynamoLayout) Layout(_ []fyne.CanvasObject, currSize fyne.Size) {
 	topH := l.top.MinSize().Height
 	leftH := (currSize.Height * 0.65) - topH
 	leftW := (currSize.Width * 0.25)
+	rightH := leftH
+	rightW := currSize.Width - leftW
 	sepTickness := theme.Size(theme.SizeNameSeparatorThickness)
 
 	l.top.Move(fyne.NewPos(0, 0))
@@ -32,6 +35,9 @@ func (l *dynamoLayout) Layout(_ []fyne.CanvasObject, currSize fyne.Size) {
 
 	l.left.Move(fyne.NewPos(0, topH))
 	l.left.Resize(fyne.NewSize(leftW, leftH))
+
+	l.right.Move(fyne.NewPos(leftW, topH))
+	l.right.Resize(fyne.NewSize(rightW, rightH))
 
 	l.dividers[0].Move(fyne.NewPos(0, topH))
 	l.dividers[0].Resize(fyne.NewSize(currSize.Width, sepTickness))

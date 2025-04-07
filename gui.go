@@ -1,7 +1,10 @@
 package main
 
 import (
+	"image/color"
+
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/theme"
@@ -61,6 +64,10 @@ func makeTopBar() fyne.CanvasObject {
 	return container.NewPadded(widget.NewToolbar(toolbarAction))
 }
 
+func makeRightPanel() fyne.CanvasObject {
+	return canvas.NewRectangle(color.RGBA{18, 18, 18, 255})
+}
+
 func makeGUI() fyne.CanvasObject {
 	dividers := [3]fyne.Widget{
 		widget.NewSeparator(),
@@ -71,6 +78,7 @@ func makeGUI() fyne.CanvasObject {
 	objects := []fyne.CanvasObject{
 		makeLeftPanel(),
 		makeTopBar(),
+		makeRightPanel(),
 		dividers[0],
 		dividers[1],
 		dividers[2],
@@ -79,6 +87,7 @@ func makeGUI() fyne.CanvasObject {
 	layout := newDynamoLayout(
 		objects[0],
 		objects[1],
+		objects[2],
 		dividers,
 	)
 
