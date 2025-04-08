@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"image/color"
+	"path/filepath"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -9,9 +11,15 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/sqweek/dialog"
 )
 
-func makeLeftPanel() fyne.CanvasObject {
+type gui struct {
+	win              fyne.Window
+	currentDirectory binding.String
+}
+
+func (g *gui) makeLeftPanel() fyne.CanvasObject {
 	data := binding.BindStringList(dummyReportNames)
 
 	list := widget.NewListWithData(
@@ -29,12 +37,12 @@ func makeLeftPanel() fyne.CanvasObject {
 	return container.NewPadded(list)
 }
 
-func makeTopBar() fyne.CanvasObject {
+func (g *gui) makeTopBar() fyne.CanvasObject {
 	var toolbarActionRef *widget.ToolbarAction
 	currApp := fyne.CurrentApp()
 
 	items := []*fyne.MenuItem{
-		fyne.NewMenuItem("Abrir diretório", func() {}),
+		fyne.NewMenuItem("Abrir diretório", g.openDirectoryDialog),
 		fyne.NewMenuItem("Abrir relatório", func() {}),
 		fyne.NewMenuItemSeparator(),
 		fyne.NewMenuItem("Fechar", currApp.Quit),
@@ -42,7 +50,7 @@ func makeTopBar() fyne.CanvasObject {
 
 	popUpMenu := widget.NewPopUpMenu(
 		fyne.NewMenu("MainMenu", items...),
-		currApp.Driver().AllWindows()[0].Canvas(),
+		g.win.Canvas(),
 	)
 
 	toolbarAction := widget.NewToolbarAction(
@@ -53,7 +61,7 @@ func makeTopBar() fyne.CanvasObject {
 			}
 
 			pos := currApp.Driver().AbsolutePositionForObject(toolbarActionRef.ToolbarObject())
-			newPos := fyne.NewPos(0, pos.Y+toolbarActionRef.ToolbarObject().MinSize().Height)
+			newPos := fyne.NewPos(pos.X, pos.Y+toolbarActionRef.ToolbarObject().MinSize().Height)
 
 			popUpMenu.ShowAtPosition(newPos)
 		},
@@ -64,15 +72,15 @@ func makeTopBar() fyne.CanvasObject {
 	return container.NewPadded(widget.NewToolbar(toolbarAction))
 }
 
-func makeRightPanel() fyne.CanvasObject {
+func (g *gui) makeRightPanel() fyne.CanvasObject {
 	return canvas.NewRectangle(color.RGBA{18, 18, 18, 255})
 }
 
-func makeBottomPanel() fyne.CanvasObject {
+func (g *gui) makeBottomPanel() fyne.CanvasObject {
 	return container.NewVBox()
 }
 
-func makeGUI() fyne.CanvasObject {
+func (g *gui) makeGUI() fyne.CanvasObject {
 	dividers := [3]fyne.Widget{
 		widget.NewSeparator(),
 		widget.NewSeparator(),
@@ -80,10 +88,10 @@ func makeGUI() fyne.CanvasObject {
 	}
 
 	objects := []fyne.CanvasObject{
-		makeLeftPanel(),
-		makeTopBar(),
-		makeRightPanel(),
-		makeBottomPanel(),
+		g.makeLeftPanel(),
+		g.makeTopBar(),
+		g.makeRightPanel(),
+		g.makeBottomPanel(),
 		dividers[0],
 		dividers[1],
 		dividers[2],
@@ -98,4 +106,23 @@ func makeGUI() fyne.CanvasObject {
 	)
 
 	return container.New(layout, objects...)
+}
+
+func (g *gui) openDirectoryDialog() {
+	dir, err := dialog.Directory().Browse()
+
+	if err != nil && !errors.Is(err, dialog.Cancelled) {
+		dialog.Message("%s", err.Error()).Error()
+		return
+	}
+
+	abs, err := filepath.Abs(dir)
+
+	if err != nil {
+		dialog.Message("%s", err.Error()).Error()
+		return
+	}
+
+	g.currentDirectory.Set(abs)
+
 }
