@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"image/color"
+	"os"
 	"path/filepath"
 
 	"fyne.io/fyne/v2"
@@ -20,7 +21,37 @@ type gui struct {
 }
 
 func (g *gui) makeLeftPanel() fyne.CanvasObject {
-	data := binding.BindStringList(dummyReportNames)
+	data := binding.NewStringList()
+
+	g.currentDirectory.AddListener(
+		binding.NewDataListener(func() {
+			dir, err := g.currentDirectory.Get()
+
+			if err != nil {
+				dialog.Message("%s", err.Error()).Error()
+			}
+
+			files, err := os.ReadDir(dir)
+
+			if err != nil {
+				dialog.Message("%s", err.Error()).Error()
+			}
+
+			for _, value := range files {
+				if value.IsDir() {
+					continue
+				}
+
+				if filepath.Ext(value.Name()) != ".toml" {
+					continue
+				}
+
+				if err := data.Append(value.Name()); err != nil {
+					dialog.Message("%s", err.Error()).Error()
+				}
+			}
+		}),
+	)
 
 	list := widget.NewListWithData(
 		data,
