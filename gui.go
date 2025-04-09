@@ -97,7 +97,7 @@ func (g *gui) makeGUI() fyne.CanvasObject {
 	}
 
 	return container.New(
-		newResponsiveLayout(
+		newDynamoLayout(
 			objects[0],
 			objects[1],
 			objects[2],
