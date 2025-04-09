@@ -6,6 +6,7 @@ func main() {
 	application := app.New()
 	mainWindow := application.NewWindow("dynamo.app")
 
+	mainWindow.SetContent(makeGUI())
 	mainWindow.CenterOnScreen()
 	mainWindow.ShowAndRun()
 }
