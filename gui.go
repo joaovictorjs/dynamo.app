@@ -19,11 +19,36 @@ func newGui(win fyne.Window) *gui {
 }
 
 func (g *gui) makeTopContent() fyne.CanvasObject {
+	popupMenu := widget.NewPopUpMenu(
+		fyne.NewMenu(
+			"",
+			fyne.NewMenuItem("Abrir Diretório", func() {}),
+			fyne.NewMenuItem("Abrir Relatório", func() {}),
+			fyne.NewMenuItemSeparator(),
+			fyne.NewMenuItem("Fechar", func() {}),
+		),
+		g.currentWindow.Canvas(),
+	)
+
+	var menuActionRef *widget.ToolbarAction
+
+	menuAction := widget.NewToolbarAction(
+		theme.Icon(theme.IconNameMenu),
+		func() {
+			if menuActionRef == nil {
+				return
+			}
+
+			pos := fyne.CurrentApp().Driver().AbsolutePositionForObject(menuActionRef.ToolbarObject())
+			popupMenu.ShowAtPosition(fyne.NewPos(pos.X, pos.Y+menuActionRef.ToolbarObject().MinSize().Height))
+		},
+	)
+
+	menuActionRef = menuAction
+
 	return container.NewPadded(
 		container.NewHBox(
-			widget.NewToolbar(
-				widget.NewToolbarAction(theme.Icon(theme.IconNameMenu), func() {}),
-			),
+			widget.NewToolbar(menuAction),
 			layout.NewSpacer(),
 			widget.NewToolbar(
 				widget.NewToolbarAction(theme.Icon(theme.IconNameMediaPlay), func() {}),
